@@ -43,7 +43,6 @@ class PdfViewerActivity : AppCompatActivity() {
         const val FILE_TITLE = "pdf_file_title"
         const val ENABLE_FILE_DOWNLOAD = "enable_download"
         const val FROM_ASSETS = "from_assests"
-        var engine = PdfEngine.INTERNAL
         var enableDownload = true
         var isPDFFromPath = false
         var isFromAssets = false
@@ -106,9 +105,6 @@ class PdfViewerActivity : AppCompatActivity() {
             FROM_ASSETS,
             false
         )
-
-        engine = PdfEngine.INTERNAL
-
         init()
     }
 
@@ -206,21 +202,17 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun loadFileFromNetwork(fileUrl: String?) {
-        initPdfViewer(
-            fileUrl,
-            engine
-        )
+        initPdfViewer( fileUrl )
     }
 
-    private fun initPdfViewer(fileUrl: String?, engine: PdfEngine) {
+    private fun initPdfViewer(fileUrl: String?) {
         if (TextUtils.isEmpty(fileUrl)) onPdfError()
 
         //Initiating PDf Viewer with URL
         try {
             pdfView.initWithUrl(
                 fileUrl!!,
-                PdfQuality.NORMAL,
-                engine
+                PdfQuality.NORMAL
             )
         } catch (e: Exception) {
             onPdfError()

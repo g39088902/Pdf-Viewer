@@ -32,7 +32,6 @@ class PdfRendererView @JvmOverloads constructor(
     private lateinit var pdfRendererCore: PdfRendererCore
     private lateinit var pdfViewAdapter: PdfViewAdapter
     private var quality = PdfQuality.NORMAL
-    private var engine = PdfEngine.INTERNAL
     private var showDivider = true
     private var divider: Drawable? = null
     private var runnable = Runnable {}
@@ -54,8 +53,7 @@ class PdfRendererView @JvmOverloads constructor(
 
     fun initWithUrl(
         url: String,
-        pdfQuality: PdfQuality = this.quality,
-        engine: PdfEngine = this.engine
+        pdfQuality: PdfQuality = this.quality
     ) {
 
         PdfDownloader(url, object : PdfDownloader.StatusListener {
@@ -197,12 +195,8 @@ class PdfRendererView @JvmOverloads constructor(
     }
 
     private fun setTypeArray(typedArray: TypedArray) {
-        val ratio =
-            typedArray.getInt(R.styleable.PdfRendererView_pdfView_quality, PdfQuality.NORMAL.ratio)
+        val ratio = typedArray.getInt(R.styleable.PdfRendererView_pdfView_quality, PdfQuality.NORMAL.ratio)
         quality = PdfQuality.values().first { it.ratio == ratio }
-        val engineValue =
-            typedArray.getInt(R.styleable.PdfRendererView_pdfView_engine, PdfEngine.INTERNAL.value)
-        engine = PdfEngine.values().first { it.value == engineValue }
         showDivider = typedArray.getBoolean(R.styleable.PdfRendererView_pdfView_showDivider, true)
         divider = typedArray.getDrawable(R.styleable.PdfRendererView_pdfView_divider)
 
