@@ -3,14 +3,9 @@ package com.rajat.pdfviewer
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -19,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import kotlinx.android.synthetic.main.pdf_rendererview.view.*
 import java.io.File
+import java.lang.Integer.min
 
 /**
  * Created by Rajat on 11,July,2020
@@ -39,9 +35,7 @@ class PdfRendererView @JvmOverloads constructor(
 
     var statusListener: StatusCallBack? = null
     val totalPageCount: Int
-        get() {
-            return pdfRendererCore.getPageCount()
-        }
+        get() = pdfRendererCore.getPageCount()
 
     interface StatusCallBack {
         fun onDownloadStart() {}
@@ -55,7 +49,6 @@ class PdfRendererView @JvmOverloads constructor(
         url: String,
         pdfQuality: PdfQuality = this.quality
     ) {
-
         PdfDownloader(url, object : PdfDownloader.StatusListener {
             override fun getContext(): Context = context
             override fun onDownloadStart() {
@@ -64,8 +57,7 @@ class PdfRendererView @JvmOverloads constructor(
 
             override fun onDownloadProgress(currentBytes: Long, totalBytes: Long) {
                 var progress = (currentBytes.toFloat() / totalBytes.toFloat() * 100F).toInt()
-                if (progress >= 100)
-                    progress = 100
+                progress = min(100,progress)
                 statusListener?.onDownloadProgress(progress, currentBytes, totalBytes)
             }
 
@@ -75,21 +67,16 @@ class PdfRendererView @JvmOverloads constructor(
             }
 
             override fun onError(error: Throwable) {
-                error.printStackTrace()
                 statusListener?.onError(error)
             }
         })
     }
 
     fun initWithPath(path: String, pdfQuality: PdfQuality = this.quality) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            throw UnsupportedOperationException("should be over API 21")
-        initWithFile(File(path), pdfQuality)
+        init(File(path), pdfQuality)
     }
 
     fun initWithFile(file: File, pdfQuality: PdfQuality = this.quality) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            throw UnsupportedOperationException("should be over API 21")
         init(file, pdfQuality)
     }
 
@@ -149,39 +136,10 @@ class PdfRendererView @JvmOverloads constructor(
 
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             super.onScrollStateChanged(recyclerView, newState)
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                pageNo.postDelayed(runnable, 3000)
-            } else {
-                pageNo.removeCallbacks(runnable)
-            }
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) pageNo.postDelayed(runnable, 3000)
+            else pageNo.removeCallbacks(runnable)
         }
 
-    }
-
-    internal class PdfWebViewClient(private val statusListener: StatusCallBack?) : WebViewClient() {
-        override fun onPageFinished(view: WebView?, url: String?) {
-            super.onPageFinished(view, url)
-            statusListener?.onDownloadSuccess()
-        }
-
-        override fun onReceivedError(
-            view: WebView?,
-            request: WebResourceRequest?,
-            error: WebResourceError?
-        ) {
-            super.onReceivedError(view, request, error)
-            statusListener?.onError(Throwable("Web resource error"))
-        }
-
-        override fun onReceivedError(
-            view: WebView?,
-            errorCode: Int,
-            description: String?,
-            failingUrl: String?
-        ) {
-            super.onReceivedError(view, errorCode, description, failingUrl)
-            statusListener?.onError(Throwable("Web resource error"))
-        }
     }
 
     init {
@@ -189,23 +147,18 @@ class PdfRendererView @JvmOverloads constructor(
     }
 
     private fun getAttrs(attrs: AttributeSet?, defStyle: Int) {
-        val typedArray =
-            context.obtainStyledAttributes(attrs, R.styleable.PdfRendererView, defStyle, 0)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PdfRendererView, defStyle, 0)
         setTypeArray(typedArray)
     }
 
     private fun setTypeArray(typedArray: TypedArray) {
-        val ratio = typedArray.getInt(R.styleable.PdfRendererView_pdfView_quality, PdfQuality.NORMAL.ratio)
-        quality = PdfQuality.values().first { it.ratio == ratio }
         showDivider = typedArray.getBoolean(R.styleable.PdfRendererView_pdfView_showDivider, true)
         divider = typedArray.getDrawable(R.styleable.PdfRendererView_pdfView_divider)
-
         typedArray.recycle()
     }
 
     fun closePdfRender() {
-        if (pdfRendererCoreInitialised)
-            pdfRendererCore.closePdfRender()
+        if (pdfRendererCoreInitialised) pdfRendererCore.closePdfRender()
     }
 
 }

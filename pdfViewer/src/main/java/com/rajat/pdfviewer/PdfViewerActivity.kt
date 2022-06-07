@@ -232,10 +232,7 @@ class PdfViewerActivity : AppCompatActivity() {
                 com.rajat.pdfviewer.util.FileUtils.fileFromAsset(this, filePath!!)
             else File(filePath!!)
 
-            pdfView.initWithFile(
-                file,
-                PdfQuality.NORMAL
-            )
+            pdfView.initWithFile(file, PdfQuality.NORMAL)
 
         } catch (e: Exception) {
             onPdfError()

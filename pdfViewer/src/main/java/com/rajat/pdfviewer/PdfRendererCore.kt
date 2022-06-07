@@ -29,9 +29,6 @@ internal class PdfRendererCore(
     pdfFile: File,
     private val pdfQuality: PdfQuality
 ) {
-    companion object {
-        private const val PREFETCH_COUNT = 3
-    }
 
     private val cachePath = "___pdf___cache___"
     private var pdfRenderer: PdfRenderer? = null
@@ -43,8 +40,7 @@ internal class PdfRendererCore(
 
     private fun initCache() {
         val cache = File(context.cacheDir, cachePath)
-        if (cache.exists())
-            cache.deleteRecursively()
+        if (cache.exists()) cache.deleteRecursively()
         cache.mkdirs()
     }
 
@@ -72,8 +68,7 @@ internal class PdfRendererCore(
 
     private fun openPdfFile(pdfFile: File) {
         try {
-            val fileDescriptor =
-                ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
+            val fileDescriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
             pdfRenderer = PdfRenderer(fileDescriptor)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -98,21 +93,12 @@ internal class PdfRendererCore(
         }
     }
 
-    private fun prefetchNext(pageNo: Int) {
-        val countForPrefetch = min(getPageCount(), pageNo + PREFETCH_COUNT)
-        for (pageToPrefetch in pageNo until countForPrefetch) {
-            renderPage(pageToPrefetch)
-        }
-    }
-
     private fun buildBitmap(pageNo: Int, onBitmap: (Bitmap?) -> Unit) {
         var bitmap = getBitmapFromCache(pageNo)
         bitmap?.let {
             onBitmap(it)
             return@buildBitmap
         }
-
-        val startTime = System.currentTimeMillis()
 
         try {
             val pdfPage = pdfRenderer!!.openPage(pageNo)

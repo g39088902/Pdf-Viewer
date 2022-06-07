@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 class PinchZoomRecyclerView : RecyclerView {
     private var mActivePointerId = INVALID_POINTER_ID
     private var mScaleDetector: ScaleGestureDetector? = null
-    private var mScaleFactor = 1f
+    private var mScaleFactor = 0.5f
     private var maxWidth = 0.0f
     private var maxHeight = 0.0f
     private var mLastTouchX = 0f
@@ -119,7 +119,7 @@ class PinchZoomRecyclerView : RecyclerView {
 
     override fun dispatchDraw(canvas: Canvas) {
         canvas.save()
-        if (mScaleFactor == 1.0f) {
+        if (mScaleFactor <= 1.0f) {
             mPosX = 0.0f
             mPosY = 0.0f
         }
@@ -134,7 +134,7 @@ class PinchZoomRecyclerView : RecyclerView {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
 
             val scale = detector.scaleFactor
-            mScaleFactor = 1.0f.coerceAtLeast((mScaleFactor * scale).coerceAtMost(3.0f))
+            mScaleFactor = 0.5f.coerceAtLeast((mScaleFactor * scale).coerceAtMost(3.0f))
             if (mScaleFactor < 3f) {
                 val centerX = detector.focusX
                 val centerY = detector.focusY
