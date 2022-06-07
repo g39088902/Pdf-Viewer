@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
-    private var download_file_url = "https://github.com/afreakyelf/Pdf-Viewer/files/5856345/AA.pdf"
+    private var download_file_url = "https://yz.tsinghua.edu.cn/__local/7/34/06/15628D1B563B4A683D491C5BE5C_898E6ED3_27218.pdf?e=.pdf"
     var per = 0f
     private val PERMISSION_CODE = 4040
 

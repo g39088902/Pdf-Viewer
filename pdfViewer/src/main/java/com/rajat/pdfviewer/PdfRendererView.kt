@@ -1,6 +1,5 @@
 package com.rajat.pdfviewer
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.drawable.Drawable
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import kotlinx.android.synthetic.main.pdf_rendererview.view.*
 import java.io.File
-import java.net.URLEncoder
 
 /**
  * Created by Rajat on 11,July,2020
@@ -59,11 +57,6 @@ class PdfRendererView @JvmOverloads constructor(
         pdfQuality: PdfQuality = this.quality,
         engine: PdfEngine = this.engine
     ) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || engine == PdfEngine.GOOGLE) {
-            initUnderKitkat(url)
-            statusListener?.onDownloadStart()
-            return
-        }
 
         PdfDownloader(url, object : PdfDownloader.StatusListener {
             override fun getContext(): Context = context
@@ -165,23 +158,6 @@ class PdfRendererView @JvmOverloads constructor(
             }
         }
 
-    }
-
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun initUnderKitkat(url: String) {
-        val v = LayoutInflater.from(context).inflate(R.layout.pdf_rendererview, this, false)
-        addView(v)
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.visibility = View.GONE
-        webView.visibility = View.VISIBLE
-        webView.settings.javaScriptEnabled = true
-        webView.webViewClient = PdfWebViewClient(statusListener)
-        webView.loadUrl(
-            "https://drive.google.com/viewer/viewer?hl=en&embedded=true&url=${URLEncoder.encode(
-                url,
-                "UTF-8"
-            )}"
-        )
     }
 
     internal class PdfWebViewClient(private val statusListener: StatusCallBack?) : WebViewClient() {
