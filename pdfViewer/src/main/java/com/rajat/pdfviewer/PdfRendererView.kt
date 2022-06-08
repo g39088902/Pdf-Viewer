@@ -16,10 +16,6 @@ import kotlinx.android.synthetic.main.pdf_rendererview.view.*
 import java.io.File
 import java.lang.Integer.min
 
-/**
- * Created by Rajat on 11,July,2020
- */
-
 class PdfRendererView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
@@ -43,7 +39,7 @@ class PdfRendererView @JvmOverloads constructor(
         fun onPageChanged(currentPage: Int, totalPage: Int) {}
     }
 
-    fun initWithUrl( url: String, pdfQuality: PdfQuality = this.quality ) {
+    fun initWithUrl( url: String, pdfQuality: PdfQuality = this.quality, id: String = "default") {
         PdfDownloader(url, object : PdfDownloader.StatusListener {
             override fun getContext(): Context = context
             override fun onDownloadStart() {
@@ -64,7 +60,7 @@ class PdfRendererView @JvmOverloads constructor(
             override fun onError(error: Throwable) {
                 statusListener?.onError(error)
             }
-        })
+        },id)
     }
 
     fun initWithPath(path: String, pdfQuality: PdfQuality = this.quality) {

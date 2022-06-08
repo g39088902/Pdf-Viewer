@@ -9,11 +9,7 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.net.URL
 
-/**
- * Created by Rajat on 11,July,2020
- */
-
-internal class PdfDownloader(url: String, private val listener: StatusListener) {
+internal class PdfDownloader(url: String, private val listener: StatusListener,id:String) {
     interface StatusListener {
         fun getContext(): Context
         fun onDownloadStart() {}
@@ -23,12 +19,12 @@ internal class PdfDownloader(url: String, private val listener: StatusListener) 
     }
 
     init {
-        GlobalScope.async { download(url) }
+        GlobalScope.async { download(url,id) }
     }
 
-    private fun download(downloadUrl: String) {
+    private fun download(downloadUrl: String,id:String) {
         GlobalScope.launch(Dispatchers.Main) { listener.onDownloadStart() }
-        val outputFile = File(listener.getContext().cacheDir, "downloaded_pdf.pdf")
+        val outputFile = File(listener.getContext().cacheDir, "${id}.pdf")
         if (outputFile.exists())
             outputFile.delete()
         try {
@@ -45,8 +41,7 @@ internal class PdfDownloader(url: String, private val listener: StatusListener) 
             do {
                 val data = ByteArray(bufferSize)
                 val count = inputStream.read(data)
-                if (count == -1)
-                    break
+                if (count == -1) break
                 if (totalLength > 0) {
                     downloaded += bufferSize
                     GlobalScope.launch(Dispatchers.Main) {
@@ -59,7 +54,6 @@ internal class PdfDownloader(url: String, private val listener: StatusListener) 
                 outputStream.write(data, 0, count)
             } while (true)
         } catch (e: Exception) {
-            e.printStackTrace()
             GlobalScope.launch(Dispatchers.Main) { listener.onError(e) }
             return
         }
