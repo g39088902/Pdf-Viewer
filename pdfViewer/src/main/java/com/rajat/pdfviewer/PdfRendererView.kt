@@ -34,7 +34,7 @@ class PdfRendererView @JvmOverloads constructor(
     interface StatusCallBack {
         fun onDownloadStart() {}
         fun onDownloadProgress(progress: Int, downloadedBytes: Long, totalBytes: Long?) {}
-        fun onDownloadSuccess() {}
+        fun onDownloadSuccess(filePath: String) {}
         fun onError(error: Throwable) {}
         fun onPageChanged(currentPage: Int, totalPage: Int) {}
     }
@@ -54,7 +54,7 @@ class PdfRendererView @JvmOverloads constructor(
 
             override fun onDownloadSuccess(absolutePath: String) {
                 initWithPath(absolutePath, pdfQuality)
-                statusListener?.onDownloadSuccess()
+                statusListener?.onDownloadSuccess(absolutePath)
             }
 
             override fun onError(error: Throwable) {
