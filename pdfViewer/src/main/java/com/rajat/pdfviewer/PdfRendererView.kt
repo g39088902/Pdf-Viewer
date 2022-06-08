@@ -43,10 +43,7 @@ class PdfRendererView @JvmOverloads constructor(
         fun onPageChanged(currentPage: Int, totalPage: Int) {}
     }
 
-    fun initWithUrl(
-        url: String,
-        pdfQuality: PdfQuality = this.quality
-    ) {
+    fun initWithUrl( url: String, pdfQuality: PdfQuality = this.quality ) {
         PdfDownloader(url, object : PdfDownloader.StatusListener {
             override fun getContext(): Context = context
             override fun onDownloadStart() {
@@ -91,7 +88,6 @@ class PdfRendererView @JvmOverloads constructor(
             itemAnimator = DefaultItemAnimator()
             addOnScrollListener(scrollListener)
         }
-
     }
 
     private val scrollListener = object : RecyclerView.OnScrollListener() {
@@ -102,7 +98,7 @@ class PdfRendererView @JvmOverloads constructor(
                 foundPosition /=2
 
                 pageNo.run {
-                    if (foundPosition != NO_POSITION) text = "${(foundPosition + 1)} of $totalPageCount"
+                    if (foundPosition != NO_POSITION) text = "共 $totalPageCount 页"
                     pageNo.visibility = View.VISIBLE
                 }
 
@@ -126,9 +122,7 @@ class PdfRendererView @JvmOverloads constructor(
 
     }
 
-    init {
-        getAttrs(attrs, defStyleAttr)
-    }
+    init { getAttrs(attrs, defStyleAttr) }
 
     private fun getAttrs(attrs: AttributeSet?, defStyle: Int) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.PdfRendererView, defStyle, 0)
