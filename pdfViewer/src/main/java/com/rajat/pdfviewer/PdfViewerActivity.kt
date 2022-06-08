@@ -255,7 +255,7 @@ class PdfViewerActivity : AppCompatActivity() {
                 //Download is in progress
             }
 
-            override fun onDownloadSuccess() {
+            override fun onDownloadSuccess(filePath: String) {
                 false.showProgressBar()
             }
 
@@ -271,11 +271,7 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun checkPermissionOnInit() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                permission.WRITE_EXTERNAL_STORAGE
-            ) === PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission( this, permission.WRITE_EXTERNAL_STORAGE ) === PackageManager.PERMISSION_GRANTED) {
             permissionGranted = true
         }
     }
