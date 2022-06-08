@@ -25,15 +25,15 @@ internal class PdfViewAdapter(private val renderer: PdfRendererCore) :
     }
 
     override fun onBindViewHolder(holder: PdfPageViewHolder, position: Int) {
-        holder.bind()
+        holder.bind(position)
     }
 
     inner class PdfPageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind() {
+        fun bind(position: Int) {
             with(itemView) {
                 pageView.setImageBitmap(null)
-                renderer.renderPage(adapterPosition) { bitmap: Bitmap?, pageNo: Int ->
-                    if (pageNo != adapterPosition) return@renderPage
+                renderer.renderPage(position) { bitmap: Bitmap?, pageNo: Int ->
+                    if (pageNo != position) return@renderPage
                     bitmap?.let {
                         pageView.layoutParams = pageView.layoutParams.apply {
                             height = (pageView.width.toFloat() / ((bitmap.width.toFloat() / bitmap.height.toFloat()))).toInt()
@@ -41,7 +41,7 @@ internal class PdfViewAdapter(private val renderer: PdfRendererCore) :
                         pageView.setImageBitmap(bitmap)
                         pageView.animation = AlphaAnimation(0F, 1F).apply {
                             interpolator = LinearInterpolator()
-                            duration = 300
+                            duration = 100
                         }
                     }
                 }

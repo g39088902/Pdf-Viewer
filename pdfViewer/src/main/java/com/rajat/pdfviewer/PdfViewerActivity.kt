@@ -35,7 +35,7 @@ class PdfViewerActivity : AppCompatActivity() {
 
     private var permissionGranted: Boolean? = false
     private var menuItem: MenuItem? = null
-    private var fileUrl: String? = null
+    private var fileUrl: String = ""
 
     companion object {
         const val FILE_URL = "pdf_file_url"
@@ -110,7 +110,7 @@ class PdfViewerActivity : AppCompatActivity() {
 
     private fun init() {
         if (intent.extras!!.containsKey(FILE_URL)) {
-            fileUrl = intent.extras!!.getString(FILE_URL)
+            fileUrl = intent.extras!!.getString(FILE_URL) ?: ""
             if (isPDFFromPath) {
                 initPdfViewerWithPath(this.fileUrl)
             } else {
@@ -201,7 +201,7 @@ class PdfViewerActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun loadFileFromNetwork(fileUrl: String?) {
+    private fun loadFileFromNetwork(fileUrl: String) {
         initPdfViewer( fileUrl )
     }
 
@@ -210,10 +210,7 @@ class PdfViewerActivity : AppCompatActivity() {
 
         //Initiating PDf Viewer with URL
         try {
-            pdfView.initWithUrl(
-                fileUrl!!,
-                PdfQuality.NORMAL
-            )
+            pdfView.initWithUrl(fileUrl!!)
         } catch (e: Exception) {
             onPdfError()
         }
@@ -232,7 +229,7 @@ class PdfViewerActivity : AppCompatActivity() {
                 com.rajat.pdfviewer.util.FileUtils.fileFromAsset(this, filePath!!)
             else File(filePath!!)
 
-            pdfView.initWithFile(file, PdfQuality.NORMAL)
+            pdfView.initWithFile(file)
 
         } catch (e: Exception) {
             onPdfError()

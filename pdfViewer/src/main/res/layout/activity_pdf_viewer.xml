@@ -12,15 +12,14 @@
     <FrameLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#878787">
 
         <com.rajat.pdfviewer.PdfRendererView
             android:id="@+id/pdfView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:pdfView_divider="@drawable/divider"
-            app:pdfView_engine="internal"
-            app:pdfView_showDivider="false" />
+            app:pdfView_engine="internal" />
 
         <ProgressBar
             android:id="@+id/progressBar"

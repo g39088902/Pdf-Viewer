@@ -46,8 +46,7 @@ internal class PdfRendererCore(
 
     private fun getBitmapFromCache(pageNo: Int): Bitmap? {
         val loadPath = File(File(context.cacheDir, cachePath), pageNo.toString())
-        if (!loadPath.exists())
-            return null
+        if (!loadPath.exists()) return null
 
         return try {
             BitmapFactory.decodeFile(loadPath.absolutePath)
@@ -111,7 +110,6 @@ internal class PdfRendererCore(
             pdfPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
             pdfPage.close()
             writeBitmapToCache(pageNo, bitmap)
-
             onBitmap(bitmap)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -119,11 +117,10 @@ internal class PdfRendererCore(
     }
 
     fun closePdfRender() {
-        if (pdfRenderer != null)
-            try {
-                pdfRenderer!!.close()
-            } catch (e: Exception) {
-                Log.e("PdfRendererCore", e.toString())
-            }
+        try {
+            pdfRenderer?.close()
+        } catch (e: Exception) {
+            Log.e("PdfRendererCore", e.toString())
+        }
     }
 }

@@ -26,13 +26,11 @@ class PinchZoomRecyclerView : RecyclerView {
     private var height = 0f
 
     constructor(context: Context?) : super(context!!) {
-        if (!isInEditMode) mScaleDetector =
-            ScaleGestureDetector(getContext(), ScaleListener())
+        if (!isInEditMode) mScaleDetector = ScaleGestureDetector(getContext(), ScaleListener())
     }
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs) {
-        if (!isInEditMode) mScaleDetector =
-            ScaleGestureDetector(getContext(), ScaleListener())
+        if (!isInEditMode) mScaleDetector = ScaleGestureDetector(getContext(), ScaleListener())
     }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -40,8 +38,7 @@ class PinchZoomRecyclerView : RecyclerView {
         attrs,
         defStyleAttr
     ) {
-        if (!isInEditMode) mScaleDetector =
-            ScaleGestureDetector(getContext(), ScaleListener())
+        if (!isInEditMode) mScaleDetector = ScaleGestureDetector(getContext(), ScaleListener())
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -88,15 +85,10 @@ class PinchZoomRecyclerView : RecyclerView {
                 mLastTouchY = y
                 invalidate()
             }
-            MotionEvent.ACTION_UP -> {
-                mActivePointerId = INVALID_POINTER_ID
-            }
-            MotionEvent.ACTION_CANCEL -> {
-                mActivePointerId = INVALID_POINTER_ID
-            }
+            MotionEvent.ACTION_UP -> mActivePointerId = INVALID_POINTER_ID
+            MotionEvent.ACTION_CANCEL -> mActivePointerId = INVALID_POINTER_ID
             MotionEvent.ACTION_POINTER_UP -> {
-                val pointerIndex =
-                    action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
+                val pointerIndex = action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
                 val pointerId = ev.getPointerId(pointerIndex)
                 if (pointerId == mActivePointerId) {
                     val newPointerIndex = if (pointerIndex == 0) 1 else 0
@@ -120,8 +112,8 @@ class PinchZoomRecyclerView : RecyclerView {
     override fun dispatchDraw(canvas: Canvas) {
         canvas.save()
         if (mScaleFactor <= 1.0f) {
-            mPosX = 0.0f
-            mPosY = 0.0f
+            mPosX = width/2f * (1f-mScaleFactor)
+            mPosY = 0f
         }
         canvas.translate(mPosX, mPosY)
         canvas.scale(mScaleFactor, mScaleFactor)
@@ -134,17 +126,15 @@ class PinchZoomRecyclerView : RecyclerView {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
 
             val scale = detector.scaleFactor
-            mScaleFactor = 0.5f.coerceAtLeast((mScaleFactor * scale).coerceAtMost(3.0f))
-            if (mScaleFactor < 3f) {
-                val centerX = detector.focusX
-                val centerY = detector.focusY
-                var diffX = centerX - mPosX
-                var diffY = centerY - mPosY
-                diffX = diffX * detector.scaleFactor - diffX
-                diffY = diffY * detector.scaleFactor - diffY
-                mPosX -= diffX
-                mPosY -= diffY
-            }
+            mScaleFactor = 0.5f.coerceAtLeast((mScaleFactor * scale).coerceAtMost(2.0f))
+            val centerX = detector.focusX
+            val centerY = detector.focusY
+            var diffX = centerX - mPosX
+            var diffY = centerY - mPosY
+            diffX = diffX * detector.scaleFactor - diffX
+            diffY = diffY * detector.scaleFactor - diffY
+            mPosX -= diffX
+            mPosY -= diffY
 
             maxWidth = width - width * mScaleFactor
             maxHeight = height - height * mScaleFactor

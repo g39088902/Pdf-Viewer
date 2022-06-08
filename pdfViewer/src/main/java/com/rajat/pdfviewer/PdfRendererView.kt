@@ -28,8 +28,6 @@ class PdfRendererView @JvmOverloads constructor(
     private lateinit var pdfRendererCore: PdfRendererCore
     private lateinit var pdfViewAdapter: PdfViewAdapter
     private var quality = PdfQuality.NORMAL
-    private var showDivider = true
-    private var divider: Drawable? = null
     private var runnable = Runnable {}
     private var pdfRendererCoreInitialised = false
 
@@ -91,16 +89,7 @@ class PdfRendererView @JvmOverloads constructor(
             adapter = pdfViewAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             itemAnimator = DefaultItemAnimator()
-            if (showDivider) {
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
-                    divider?.let { setDrawable(it) }
-                }.let { addItemDecoration(it) }
-            }
             addOnScrollListener(scrollListener)
-        }
-
-        runnable = Runnable {
-            pageNo.visibility = View.GONE
         }
 
     }
@@ -109,18 +98,13 @@ class PdfRendererView @JvmOverloads constructor(
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
             (recyclerView.layoutManager as LinearLayoutManager).run {
-                var foundPosition = findFirstCompletelyVisibleItemPosition()
+                var foundPosition = findLastVisibleItemPosition() + findFirstVisibleItemPosition()
+                foundPosition /=2
 
                 pageNo.run {
-                    if (foundPosition != NO_POSITION)
-                        text = "${(foundPosition + 1)} of $totalPageCount"
+                    if (foundPosition != NO_POSITION) text = "${(foundPosition + 1)} of $totalPageCount"
                     pageNo.visibility = View.VISIBLE
                 }
-
-                if (foundPosition == 0)
-                    pageNo.postDelayed({
-                        pageNo.visibility = GONE
-                    }, 3000)
 
                 if (foundPosition != NO_POSITION) {
                     statusListener?.onPageChanged(foundPosition, totalPageCount)
@@ -152,8 +136,6 @@ class PdfRendererView @JvmOverloads constructor(
     }
 
     private fun setTypeArray(typedArray: TypedArray) {
-        showDivider = typedArray.getBoolean(R.styleable.PdfRendererView_pdfView_showDivider, true)
-        divider = typedArray.getDrawable(R.styleable.PdfRendererView_pdfView_divider)
         typedArray.recycle()
     }
 

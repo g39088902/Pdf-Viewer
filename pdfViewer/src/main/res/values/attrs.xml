@@ -5,8 +5,6 @@
             <enum name="internal" value="100" />
             <enum name="google" value="200" />
         </attr>
-        <attr name="pdfView_showDivider" format="boolean" />
-        <attr name="pdfView_divider" format="reference" />
     </declare-styleable>
 
     <!-- icons -->
