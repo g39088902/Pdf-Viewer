@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 32
@@ -26,6 +27,36 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                allowInsecureProtocol(true)
+                name('pdfViewer')
+                url = "https://fagg-maven.pkg.coding.net/repository/fagougouatgovernment/androidteam/"
+                credentials {
+                    username = "androidteam-1654737660043"
+                    password = "5f79d8b463bde828003f2a94f8581b198d86363b"
+                }
+            }
+        }
+        publications {
+            debugType(MavenPublication) {
+                from components.debug
+                groupId "com.rajat"
+                artifactId "pdfviewer"
+                version "1.0.8"
+            }
+            releaseType(MavenPublication) {
+                from components.release
+                groupId "com.rajat"
+                artifactId "pdfviewer"
+                version "1.0.8"
+            }
         }
     }
 }

@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.Bitmap.createBitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -106,7 +108,7 @@ internal class PdfRendererCore(
                 pdfPage.height * pdfQuality.ratio,
                 Bitmap.Config.ARGB_8888
             )
-            bitmap ?: return
+            Canvas(bitmap).drawColor(Color.WHITE)
             pdfPage.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
             pdfPage.close()
             writeBitmapToCache(pageNo, bitmap)
