@@ -39,8 +39,8 @@ afterEvaluate {
                 name('pdfViewer')
                 url = "https://fagg-maven.pkg.coding.net/repository/fagougouatgovernment/androidteam/"
                 credentials {
-                    username = properties["username"]
-                    password = properties["mavenPassword"]
+                    username = mavenUser
+                    password = mavenPassword
                 }
             }
         }
