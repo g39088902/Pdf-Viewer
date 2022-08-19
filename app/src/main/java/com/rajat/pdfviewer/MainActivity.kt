@@ -13,14 +13,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-
     private val requiredPermissionList = arrayOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
     private var download_file_url = "https://yz.tsinghua.edu.cn/__local/7/34/06/15628D1B563B4A683D491C5BE5C_898E6ED3_27218.pdf?e=.pdf"
-    var per = 0f
     private val PERMISSION_CODE = 4040
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,16 +28,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         binding.openPdf.setOnClickListener {
-            if (checkAndRequestPermission())
+            if (checkAndRequestPermission()) {
                 launchPdf()
+            }
         }
     }
 
     private fun launchPdf() {
         startActivity(
             PdfViewerActivity.launchPdfFromUrl(
-                this, download_file_url,
-                "Title", "dir",true
+                this,
+                download_file_url,
+                "Title",
+                "dir",
+                true
             )
         )
     }
@@ -77,13 +79,12 @@ class MainActivity : AppCompatActivity() {
             PERMISSION_CODE -> if (grantResults.isNotEmpty()) {
                 val readPermission = grantResults[0] == PackageManager.PERMISSION_GRANTED
                 val writePermission = grantResults[1] == PackageManager.PERMISSION_GRANTED
-                if (readPermission && writePermission)
+                if (readPermission && writePermission) {
                     launchPdf()
-                else {
+                } else {
                     Toast.makeText(this, " Permission Denied", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
-
 }

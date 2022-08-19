@@ -39,8 +39,8 @@ afterEvaluate {
                 name('pdfViewer')
                 url = "https://fagg-maven.pkg.coding.net/repository/fagougouatgovernment/androidteam/"
                 credentials {
-                    username = "androidteam-1654737660043"
-                    password = "5f79d8b463bde828003f2a94f8581b198d86363b"
+                    username = properties["username"]
+                    password = properties["mavenPassword"]
                 }
             }
         }
@@ -49,13 +49,13 @@ afterEvaluate {
                 from components.debug
                 groupId "com.rajat"
                 artifactId "pdfviewer"
-                version "1.0.8"
+                version "1.0.9"
             }
             releaseType(MavenPublication) {
                 from components.release
                 groupId "com.rajat"
                 artifactId "pdfviewer"
-                version "1.0.8"
+                version "1.0.9"
             }
         }
     }
@@ -63,14 +63,14 @@ afterEvaluate {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.10"
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation "androidx.recyclerview:recyclerview:1.2.1"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'com.google.android.material:material:1.6.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

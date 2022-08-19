@@ -7,15 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
@@ -34,7 +30,6 @@ import java.io.File
 class PdfViewerActivity : AppCompatActivity() {
 
     private var permissionGranted: Boolean? = false
-    private var menuItem: MenuItem? = null
     private var fileUrl: String = ""
 
     companion object {
@@ -47,7 +42,6 @@ class PdfViewerActivity : AppCompatActivity() {
         var isPDFFromPath = false
         var isFromAssets = false
         var PERMISSION_CODE = 4040
-
 
         fun launchPdfFromUrl(
             context: Context?,
@@ -82,7 +76,6 @@ class PdfViewerActivity : AppCompatActivity() {
             isPDFFromPath = true
             return intent
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,59 +104,9 @@ class PdfViewerActivity : AppCompatActivity() {
     private fun init() {
         if (intent.extras!!.containsKey(FILE_URL)) {
             fileUrl = intent.extras!!.getString(FILE_URL) ?: ""
-            if (isPDFFromPath) {
-                initPdfViewerWithPath(this.fileUrl)
-            } else {
-                if (checkInternetConnection(this)) {
-                    loadFileFromNetwork(this.fileUrl)
-                } else {
-                    Toast.makeText(
-                        this,
-                        "No Internet Connection. Please Check your internet connection.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
+            if (isPDFFromPath) initPdfViewerWithPath(this.fileUrl)
+            else loadFileFromNetwork(this.fileUrl)
         }
-    }
-
-    private fun checkInternetConnection(context: Context): Boolean {
-        var result = 0 // Returns connection type. 0: none; 1: mobile data; 2: wifi
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cm?.run {
-                cm.getNetworkCapabilities(cm.activeNetwork)?.run {
-                    when {
-                        hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                            result = 2
-                        }
-                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                            result = 1
-                        }
-                        hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> {
-                            result = 3
-                        }
-                    }
-                }
-            }
-        } else {
-            cm?.run {
-                cm.activeNetworkInfo?.run {
-                    when (type) {
-                        ConnectivityManager.TYPE_WIFI -> {
-                            result = 2
-                        }
-                        ConnectivityManager.TYPE_MOBILE -> {
-                            result = 1
-                        }
-                        ConnectivityManager.TYPE_VPN -> {
-                            result = 3
-                        }
-                    }
-                }
-            }
-        }
-        return result != 0
     }
 
     private fun setUpToolbar(toolbarTitle: String) {
@@ -171,26 +114,14 @@ class PdfViewerActivity : AppCompatActivity() {
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
-            if(tvAppBarTitle!=null) {
+            if (tvAppBarTitle != null) {
                 tvAppBarTitle?.text = toolbarTitle
                 setDisplayShowTitleEnabled(false)
-            }else{
+            } else {
                 setDisplayShowTitleEnabled(true)
                 title = toolbarTitle
             }
         }
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
-        menuItem = menu?.findItem(R.id.download)
-        return true
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menuItem?.isVisible = enableDownload
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -202,13 +133,13 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun loadFileFromNetwork(fileUrl: String) {
-        initPdfViewer( fileUrl )
+        initPdfViewer(fileUrl)
     }
 
     private fun initPdfViewer(fileUrl: String?) {
         if (TextUtils.isEmpty(fileUrl)) onPdfError()
 
-        //Initiating PDf Viewer with URL
+        // Initiating PDf Viewer with URL
         try {
             pdfView.initWithUrl(fileUrl!!)
         } catch (e: Exception) {
@@ -216,21 +147,18 @@ class PdfViewerActivity : AppCompatActivity() {
         }
 
         enableDownload()
-
     }
 
     private fun initPdfViewerWithPath(filePath: String?) {
         if (TextUtils.isEmpty(filePath)) onPdfError()
 
-        //Initiating PDf Viewer with URL
+        // Initiating PDf Viewer with URL
         try {
-
-            val file = if (isFromAssets)
+            val file = if (isFromAssets) {
                 com.rajat.pdfviewer.util.FileUtils.fileFromAsset(this, filePath!!)
-            else File(filePath!!)
+            } else File(filePath!!)
 
             pdfView.initWithFile(file)
-
         } catch (e: Exception) {
             onPdfError()
         }
@@ -239,7 +167,6 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun enableDownload() {
-
         checkPermissionOnInit()
 
         pdfView.statusListener = object : PdfRendererView.StatusCallBack {
@@ -252,7 +179,7 @@ class PdfViewerActivity : AppCompatActivity() {
                 downloadedBytes: Long,
                 totalBytes: Long?
             ) {
-                //Download is in progress
+                // Download is in progress
             }
 
             override fun onDownloadSuccess(filePath: String) {
@@ -264,14 +191,13 @@ class PdfViewerActivity : AppCompatActivity() {
             }
 
             override fun onPageChanged(currentPage: Int, totalPage: Int) {
-                //Page change. Not require
+                // Page change. Not require
             }
-
         }
     }
 
     private fun checkPermissionOnInit() {
-        if (ContextCompat.checkSelfPermission( this, permission.WRITE_EXTERNAL_STORAGE ) === PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) === PackageManager.PERMISSION_GRANTED) {
             permissionGranted = true
         }
     }
@@ -321,7 +247,7 @@ class PdfViewerActivity : AppCompatActivity() {
                         val request = DownloadManager.Request(downloadUrl)
                         request.setAllowedNetworkTypes(
                             DownloadManager.Request.NETWORK_WIFI or
-                                    DownloadManager.Request.NETWORK_MOBILE
+                                DownloadManager.Request.NETWORK_MOBILE
                         )
                         request.setAllowedOverRoaming(true)
                         request.setTitle(fileName)
@@ -348,7 +274,6 @@ class PdfViewerActivity : AppCompatActivity() {
             } else {
                 checkPermissionOnInit()
             }
-
         } catch (e: Exception) {
             Log.e("Error", e.toString())
         }
@@ -359,7 +284,8 @@ class PdfViewerActivity : AppCompatActivity() {
             == PackageManager.PERMISSION_DENIED
         ) {
             ActivityCompat.requestPermissions(
-                this, arrayOf(permission.WRITE_EXTERNAL_STORAGE),
+                this,
+                arrayOf(permission.WRITE_EXTERNAL_STORAGE),
                 requestCode
             )
         } else {
@@ -387,5 +313,4 @@ class PdfViewerActivity : AppCompatActivity() {
         super.onDestroy()
         pdfView.closePdfRender()
     }
-
 }

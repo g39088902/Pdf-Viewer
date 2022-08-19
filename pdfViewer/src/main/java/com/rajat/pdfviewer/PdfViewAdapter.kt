@@ -32,17 +32,14 @@ internal class PdfViewAdapter(private val renderer: PdfRendererCore) :
         fun bind(position: Int) {
             with(itemView) {
                 pageView.setImageBitmap(null)
-                renderer.renderPage(position) { bitmap: Bitmap?, pageNo: Int ->
-                    if (pageNo != position) return@renderPage
-                    bitmap?.let {
-                        pageView.layoutParams = pageView.layoutParams.apply {
-                            height = (pageView.width.toFloat() / bitmap.width.toFloat() * bitmap.height.toFloat()).toInt()
-                        }
-                        pageView.setImageBitmap(bitmap)
-                        pageView.animation = AlphaAnimation(0F, 1F).apply {
-                            interpolator = LinearInterpolator()
-                            duration = 100
-                        }
+                renderer.renderPage(position) { bitmap: Bitmap ->
+                    pageView.layoutParams = pageView.layoutParams.apply {
+                        height = (pageView.width.toFloat() / bitmap.width.toFloat() * bitmap.height.toFloat()).toInt()
+                    }
+                    pageView.setImageBitmap(bitmap)
+                    pageView.animation = AlphaAnimation(0F, 1F).apply {
+                        interpolator = LinearInterpolator()
+                        duration = 100
                     }
                 }
             }

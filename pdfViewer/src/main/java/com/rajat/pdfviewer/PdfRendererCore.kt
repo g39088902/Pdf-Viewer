@@ -1,6 +1,5 @@
 package com.rajat.pdfviewer
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
@@ -9,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
-import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
@@ -19,13 +17,11 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import kotlin.math.min
 
 /**
  * Created by Rajat on 11,July,2020
  */
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 internal class PdfRendererCore(
     private val context: Context,
     pdfFile: File,
@@ -78,23 +74,22 @@ internal class PdfRendererCore(
 
     fun getPageCount(): Int = pdfRenderer?.pageCount ?: 0
 
-    fun renderPage(pageNo: Int, onBitmapReady: ((bitmap: Bitmap?, pageNo: Int) -> Unit)? = null) {
-        if (pageNo >= getPageCount())
-            return
+    fun renderPage(pageNo: Int, onBitmapReady: ((bitmap: Bitmap) -> Unit)) {
+        if (pageNo >= getPageCount()) return
 
         GlobalScope.async {
             synchronized(this@PdfRendererCore) {
                 buildBitmap(pageNo) { bitmap ->
-                    GlobalScope.launch(Dispatchers.Main) { onBitmapReady?.invoke(bitmap, pageNo) }
+                    GlobalScope.launch(Dispatchers.Main) { onBitmapReady(bitmap) }
                 }
                 onBitmapReady?.let {
-                    //prefetchNext(pageNo + 1)
+                    // prefetchNext(pageNo + 1)
                 }
             }
         }
     }
 
-    private fun buildBitmap(pageNo: Int, onBitmap: (Bitmap?) -> Unit) {
+    private fun buildBitmap(pageNo: Int, onBitmap: (Bitmap) -> Unit) {
         var bitmap = getBitmapFromCache(pageNo)
         bitmap?.let {
             onBitmap(it)
